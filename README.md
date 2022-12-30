@@ -14,14 +14,14 @@ No hi ha limitació de capacitat de càrrega i es poden portar persones i submin
 Un rover pot transportar màxim de dos persones o una càrrega de subministres (no es poden barrejar).
 
 #### Extensió 2
-Extensió 1 + Els rovers tenen una capacitat de combustible, cada moviment gasta 1 unitat de combustible.
-V.1: No importa quan combustible facin servir en total mentre es facin les peticions.
-V.2: Es minimitza el consum de combustible total.
+Extensió 1 + Els rovers tenen una capacitat de combustible, cada moviment gasta 1 unitat de combustible.   
+V.1: No importa quan combustible facin servir en total mentre es facin les peticions.   
+V.2: Es minimitza el consum de combustible total.   
 
 #### Extensió 3
-Extensió 2 + Les peticions tenen prioritat 1, 2 o 3 (3 és la màxima), es vol màximitzar el nombre de peticions amb prioritat servides.
-V.1: No importa quan combustible facin servir en total.
-V.2: S'optimitza una combinació entre combustible total i prioritats (assignant pesos).
+Extensió 2 + Les peticions tenen prioritat 1, 2 o 3 (3 és la màxima), es vol màximitzar el nombre de peticions amb prioritat servides.   
+V.1: No importa quan combustible facin servir en total.   
+V.2: S'optimitza una combinació entre combustible total i prioritats (assignant pesos).   
 
 ## Com executar
 
@@ -43,7 +43,7 @@ Ara ja podràs executar les teves planificacions:
 ```
 ff -o domain_base.pddl -f problemaX.pddl
 ```
-Nota que domain_base es pot substituir per *domain_ext1*, *domain_ext2* o *domain_ext3* depenent de l'extensió que vulguis utilitzar.
+Nota que domain_base es pot substituir per *domain_ext1*, *domain_ext2* o *domain_ext3* depenent de l'extensió que vulguis utilitzar.   
 Recorda que cada problema esta formulat segons el domini al que va destinat.
 
 ### Com generar jocs de proves
@@ -53,6 +53,11 @@ Per executar-lo cal ficar totes les *flags* necessaries:
 ```
 python3 generator.py -r 5 -p 5 -s 10 -i 5 -as 3 -al 3 -c 0 -t base --problem_name problemaX
 ```
+o analogament:
+```
+python3 generator.py -r 5 -p 5 -s 10 -i 5 -as 3 -al 3 -c 0 -t base --problem_name problemaX
+```
+
 Usage:
 ```
 usage: generator.py [-h] [--n_personas N_PERSONAS] [--n_suministros N_SUMINISTROS] [--n_rovers N_ROVERS]
