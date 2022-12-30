@@ -55,7 +55,7 @@ python3 generator.py -r 5 -p 5 -s 10 -i 5 -as 3 -al 3 -c 0 -t base --problem_nam
 ```
 o analogament:
 ```
-python3 generator.py -r 5 -p 5 -s 10 -i 5 -as 3 -al 3 -c 0 -t base --problem_name problemaX
+python3 generator.py --n_rovers 5 --n_personas 5 --n_suministros 10 --n_peticiones 5 --n_asentamientos 3 --n_almacenes 3 --n_caminos 0 --tipo 0 --problem_name problemaX
 ```
 
 Usage:
