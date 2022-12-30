@@ -1,5 +1,8 @@
 import argparse
-from enum import Enum
+from collections import deque
+import queue
+import random
+import os
 
 def valid_tipo(arg_tipo: str) -> int:
     """Custom argparse type for user shift time values given from the command line"""
@@ -30,10 +33,27 @@ def parsing():
                         help='Numero de peticiones en el problema')
     parser.add_argument('--tipo', '-t', type=valid_tipo,
                         help='Tipo de problema a resolver\n(0 - Base, 1 - Ext1, 2 - Ext2, 3 - Ext3)')
-    parser.add_argument('--problem_name', '--name', type=valid_tipo,
+    parser.add_argument('--problem_name', '--name', type=str,
                         help='Tipo de problema a resolver\n(0 - Base, 1 - Ext1, 2 - Ext2, 3 - Ext3)')
     
     return parser
+
+def obtener_bases(n_al: int, n_as: int, rand=True):
+    bases = []
+    
+    for i in range(n_al):
+        bases.append("al" + str(i+1))
+    for i in range(n_as):
+        bases.append("as" + str(i+1))
+        
+    if (rand): random.shuffle(bases)
+    
+    return bases
+
+# Return a random number between [0, lenght-1] avoiding n.
+def rand_except(n, lenght):
+    l = list(range(0, n)) + list(range(n+1, lenght))
+    return random.choice(l)
 
 def main():
     
@@ -47,7 +67,7 @@ def main():
     n_almacenes = args.n_almacenes
     n_peticiones = args.n_peticiones
     n_caminos = args.n_caminos
-    tipo = args.tipo
+    tipo:int = args.tipo
     problem_name = args.problem_name
     
     # Excepciones que pueden lanzarse
@@ -76,8 +96,9 @@ def main():
         raise argparse.ArgumentTypeError(msg) 
     
     # Actualizar variables que pueden dar problemas
+    edges = n_personas + n_suministros
     if (n_caminos == None): n_caminos = 0
-    if (n_peticiones > n_personas + n_suministros): n_peticiones = n_personas + n_suministros
+    if (n_peticiones > edges): n_peticiones = edges
     
     # Printear datos base del problema como informacion para el usuario
     print("The following arguments will be used to create the problem:\n")
@@ -94,7 +115,112 @@ def main():
     print("# peticiones       = " + str(n_peticiones))
     print("# caminos extra    = " + str(n_caminos))
     
+    bases = obtener_bases(n_almacenes, n_asentamientos)
+    #print(bases)
     
+    # Creamos un MST uniendo todas las bases.
+    # Representaremos el grafo con connexiones entre nodos
+    g = set([])
+    for i in range(len(bases)-1):
+        # Cogeremos cada uno de los elementos de la lista y los uniremos con otro 
+        # que este por delante de el en la lista dado que aremos este proceso
+        # len(bases) - 1 nos aseguraremos obtener un grafo conexo.
+        node_ini = bases[i]
+        node_fi = bases[random.randint(i+1, len(bases)-1)]
+        g.add((node_ini, node_fi))
+    
+    # Añadimos tambien las aristas adicionales que se nos requieren
+    for i in range(n_caminos):
+        # Elegimos dos nodos aleatorios al insertar en un set no habra duplicados
+        sel = random.randint(0, len(bases)-1)
+        node_ini = bases[sel]
+        node_fi = bases[rand_except(sel, len(bases))]
+        g.add((node_ini, node_fi))
+        
+    #print(g)
+    
+    ##### Imprimimos en un fichero con el nombre deseado con el contenido del problema #####
+    print("\nEl grafo ha sido creado, satisfactoriamente.")
+    print("Creando el documento " + problem_name + ".pddl en el directorio " + str(os.getcwd()) + "\n")
+
+    f = open(problem_name + ".pddl", "w")
+    
+    ### Write header
+    domain = "Base"
+    if (tipo == 1): domain = "Ext1"
+    if (tipo == 2): domain = "Ext2"
+    if (tipo == 3): domain = "Ext3"
+    
+    f.write("(define (problem " + problem_name + ") (:domain MarsLogistics" + domain + ")\n")
+    
+    ### Write objects of the problem
+    f.write("(:objects\n\t")
+    
+    for i in range(n_rovers):
+        f.write("r" + str(i+1) + " ")
+    f.write("- rover\n\t")
+    
+    for i in range(n_almacenes):
+        f.write("al" + str(i+1) + " ")
+    f.write("- almacen\n\t")
+    
+    for i in range(n_asentamientos):
+        f.write("as" + str(i+1) + " ")
+    f.write("- asentamiento\n\t")
+    
+    for i in range(n_personas):
+        f.write("p" + str(i+1) + " ")
+    f.write("- persona\n\t")
+    
+    for i in range(n_suministros):
+        f.write("s" + str(i+1) + " ")
+    f.write("- suministro\n")
+    f.write(")\n\n")
+    
+    ### Write initial state
+    f.write("(:init\n")
+    
+    for i in range(n_personas):
+        f.write("\t(esta_en p" + str(i+1) + " as" + str(random.randint(1, n_asentamientos)) + ")\n")
+
+    for i in range(n_suministros):
+            f.write("\t(esta_en s" + str(i+1) + " al" + str(random.randint(1, n_almacenes)) + ")\n")
+            
+    for i in range(n_rovers):
+        f.write("\t(aparcado_en r" + str(i+1))
+        base = random.randint(0,1) # 0 -> asentamiento, 1 -> almacen
+        if (base == 0): f.write(" as" + str(random.randint(1, n_asentamientos)) + ")\n")
+        else:           f.write(" al" + str(random.randint(1, n_almacenes)) + ")\n")
+    
+    for node1, node2 in g:
+        f.write("\t(hay_camino " + str(node1) + " " + str(node2) + ")\n")
+    
+    f.write(")\n\n")
+    
+    ### Write goal
+    f.write("(:goal (and\n")
+    
+    l_personas = list(range(0, n_personas))
+    random.shuffle(l_personas)
+    l_suministros = list(range(0, n_suministros))
+    random.shuffle(l_suministros)
+    
+    personas = deque(l_personas)
+    suministros = deque(l_suministros)
+    
+    for i in range(n_peticiones):
+        f.write("\t(esta_en ")
+        base = random.randint(0,1) # 0 -> asentamiento, 1 -> almacen
+        if (base == 0 and len(personas) > 0): 
+            f.write("p" + str(personas.pop() + 1) + " as" + str(random.randint(1, n_asentamientos)) + ")\n")
+        else:
+            f.write("s" + str(suministros.pop() + 1) + " al" + str(random.randint(1, n_almacenes)) + ")\n")
+    
+    f.write("))\n)\n")
+    
+    f.close()
+    
+    print("El documento ha sido creado satisfactoriamente.")
 
 if __name__ == "__main__":
     main()

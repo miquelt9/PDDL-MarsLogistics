@@ -1,4 +1,4 @@
-(define (problem ManualProblem) (:domain MarsLogistics)
+(define (problem ManualProblem) (:domain MarsLogisticsBase)
 (:objects 
     r1 r2 r3 - rover
     as1 as2 as3 - asentamiento
