@@ -180,6 +180,8 @@ def main():
     ### Write initial state
     f.write("(:init\n")
     
+    if (tipo == 1): f.write("\t(= (plazasLibres) 2)\n")
+    
     for i in range(n_personas):
         f.write("\t(esta_en p" + str(i+1) + " as" + str(random.randint(1, n_asentamientos)) + ")\n")
 
