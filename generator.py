@@ -1,8 +1,9 @@
 import argparse
 from collections import deque
-import queue
 import random
 import os
+import matplotlib.pyplot as plt
+import networkx as nx
 
 def valid_tipo(arg_tipo: str) -> int:
     """Custom argparse type for user shift time values given from the command line"""
@@ -35,6 +36,8 @@ def parsing():
                         help='Tipo de problema a resolver\n(0 - Base, 1 - Ext1, 2 - Ext2, 3 - Ext3)')
     parser.add_argument('--problem_name', '--name', type=str,
                         help='Tipo de problema a resolver\n(0 - Base, 1 - Ext1, 2 - Ext2, 3 - Ext3)')
+    parser.add_argument('--draw', '-d', action='store_true',
+                        help='Dibuja el grafo del problema')
     
     return parser
 
@@ -69,6 +72,7 @@ def main():
     n_caminos = args.n_caminos
     tipo:int = args.tipo
     problem_name = args.problem_name
+    draw_it = args.draw
     
     # Excepciones que pueden lanzarse
     if (n_rovers == None or n_personas == None or n_suministros == None or n_asentamientos == None or n_almacenes == None or n_peticiones == None or tipo == None or problem_name == None):
@@ -120,14 +124,14 @@ def main():
     
     # Creamos un MST uniendo todas las bases.
     # Representaremos el grafo con connexiones entre nodos
-    g = set([])
+    connections = set([])
     for i in range(len(bases)-1):
         # Cogeremos cada uno de los elementos de la lista y los uniremos con otro 
         # que este por delante de el en la lista dado que aremos este proceso
         # len(bases) - 1 nos aseguraremos obtener un grafo conexo.
         node_ini = bases[i]
         node_fi = bases[random.randint(i+1, len(bases)-1)]
-        g.add((node_ini, node_fi))
+        connections.add((node_ini, node_fi))
     
     # Añadimos tambien las aristas adicionales que se nos requieren
     for i in range(n_caminos):
@@ -135,9 +139,9 @@ def main():
         sel = random.randint(0, len(bases)-1)
         node_ini = bases[sel]
         node_fi = bases[rand_except(sel, len(bases))]
-        g.add((node_ini, node_fi))
+        connections.add((node_ini, node_fi))
         
-    #print(g)
+    #print(connections)
     
     ##### Imprimimos en un fichero con el nombre deseado con el contenido del problema #####
     print("\nEl grafo ha sido creado, satisfactoriamente.")
@@ -194,7 +198,7 @@ def main():
         if (base == 0): f.write(" as" + str(random.randint(1, n_asentamientos)) + ")\n")
         else:           f.write(" al" + str(random.randint(1, n_almacenes)) + ")\n")
     
-    for node1, node2 in g:
+    for node1, node2 in connections:
         f.write("\t(hay_camino " + str(node1) + " " + str(node2) + ")\n")
     
     f.write(")\n\n")
@@ -223,6 +227,20 @@ def main():
     f.close()
     
     print("El documento ha sido creado satisfactoriamente.")
+    
+    G = nx.Graph()
+    color_map = []
+    for node in bases:
+        if (node[1] == "s"): color_map.append('red')
+        else:                color_map.append('blue')
+        G.add_node(node)
+    for edge in connections:
+        G.add_edge(edge[0], edge[1])
+        
+    if (draw_it == True):
+        nx.draw(G, node_color=color_map, with_labels = True, font_size = 9, font_color = 'white', font_weight = 'bold')
+        plt.show()
+        
 
 if __name__ == "__main__":
     main()
