@@ -8,10 +8,10 @@ import networkx as nx
 def valid_tipo(arg_tipo: str) -> int:
     """Custom argparse type for user shift time values given from the command line"""
 
-    if (arg_tipo == "0" or arg_tipo == "base" or arg_tipo == "Base" or arg_tipo == "extionsion0" or arg_tipo == "Extension0"): return 0
-    elif (arg_tipo == "1" or arg_tipo == "ext1" or arg_tipo == "Ext1" or arg_tipo == "extionsion1" or arg_tipo == "Extension1"): return 1
-    elif (arg_tipo == "2" or arg_tipo == "ext2" or arg_tipo == "Ext2" or arg_tipo == "extionsion2" or arg_tipo == "Extension2"): return 2
-    elif (arg_tipo == "3" or arg_tipo == "ext3" or arg_tipo == "Ext3" or arg_tipo == "extionsion3" or arg_tipo == "Extension3"): return 3
+    if (arg_tipo == "0" or arg_tipo == "base" or arg_tipo == "Base" or arg_tipo == "extiension0" or arg_tipo == "Extension0"): return 0
+    elif (arg_tipo == "1" or arg_tipo == "ext1" or arg_tipo == "Ext1" or arg_tipo == "extiension1" or arg_tipo == "Extension1"): return 1
+    elif (arg_tipo == "2" or arg_tipo == "ext2" or arg_tipo == "Ext2" or arg_tipo == "extiension2" or arg_tipo == "Extension2"): return 2
+    elif (arg_tipo == "3" or arg_tipo == "ext3" or arg_tipo == "Ext3" or arg_tipo == "extiension3" or arg_tipo == "Extension3"): return 3
         
     msg = "El tipo dado ({}) no és valido! Formato esperado: 'base', 'ext1', 'ext2', 'ext3'!".format(arg_tipo)
     raise argparse.ArgumentTypeError(msg) 
@@ -38,6 +38,8 @@ def parsing():
                         help='Tipo de problema a resolver\n(0 - Base, 1 - Ext1, 2 - Ext2, 3 - Ext3)')
     parser.add_argument('--draw', '-d', action='store_true',
                         help='Dibuja el grafo del problema')
+    parser.add_argument('--minimize', '-m', action='store_true',
+                        help='Minimiza el combustible total usado')
     
     return parser
 
@@ -73,11 +75,30 @@ def main():
     tipo:int = args.tipo
     problem_name = args.problem_name
     draw_it = args.draw
+    minimize_it = args.minimize
     
-    # Excepciones que pueden lanzarse
-    if (n_rovers == None or n_personas == None or n_suministros == None or n_asentamientos == None or n_almacenes == None or n_peticiones == None or tipo == None or problem_name == None):
-        msg = "Falta alguno de los parámetros para crear el problema, revisa los argumentos."
+    ### Excepciones que pueden lanzarse
+    
+    if(problem_name == None):
+        msg = "Se requiere de un nombre para el fichero del problema."
+        msg += "\n Use --problem_name <name> o --name <name> para definirlo."
         raise argparse.ArgumentTypeError(msg) 
+        
+    if (tipo == None):
+        msg = "Se requiere que especifique para que extension desea que se genere el problema."
+        msg += "\n Use --tipo <t> (0 - Base, 1 - Ext1, 2 - Ext2, 3 - Ext3)"
+        raise argparse.ArgumentTypeError(msg) 
+        
+    # No hay rovers ->  no se podrà solucionar el problema (si no es que es uno trovial)
+    if (n_rovers == None):
+        msg = "Se requieren de rovers para formular el problema con solución."
+        raise argparse.ArgumentTypeError(msg) 
+
+    if (n_personas == None): n_personas = 0
+    if (n_suministros == None): n_suministros = 0
+    if (n_asentamientos == None): n_asentamientos = 0
+    if (n_almacenes == None): n_almacenes = 0
+    if (n_peticiones == None ): n_peticiones = 0
     
     # Hay personas pero no asentamientos
     if (n_personas > 0 and n_asentamientos == 0):
@@ -160,32 +181,38 @@ def main():
     ### Write objects of the problem
     f.write("(:objects\n\t")
     
-    for i in range(n_rovers):
-        f.write("r" + str(i+1) + " ")
-    f.write("- rover\n\t")
+    if (n_rovers > 0):
+        for i in range(n_rovers):
+            f.write("r" + str(i+1) + " ")
+        f.write("- rover\n\t")
     
-    for i in range(n_almacenes):
-        f.write("al" + str(i+1) + " ")
-    f.write("- almacen\n\t")
+    if (n_almacenes > 0):
+        for i in range(n_almacenes):
+            f.write("al" + str(i+1) + " ")
+        f.write("- almacen\n\t")
     
-    for i in range(n_asentamientos):
-        f.write("as" + str(i+1) + " ")
-    f.write("- asentamiento\n\t")
+    if (n_asentamientos > 0):
+        for i in range(n_asentamientos):
+            f.write("as" + str(i+1) + " ")
+        f.write("- asentamiento\n\t")
     
-    for i in range(n_personas):
-        f.write("p" + str(i+1) + " ")
-    f.write("- persona\n\t")
+    if (n_personas > 0):
+        for i in range(n_personas):
+            f.write("p" + str(i+1) + " ")
+        f.write("- persona\n\t")
     
-    for i in range(n_suministros):
-        f.write("s" + str(i+1) + " ")
-    f.write("- suministro\n")
+    if (n_suministros > 0):
+        for i in range(n_suministros):
+            f.write("s" + str(i+1) + " ")
+        f.write("- suministro\n")
     f.write(")\n\n")
     
     ### Write initial state
     f.write("(:init\n")
-    
-    if (tipo == 1): f.write("\t(= (plazasLibres) 2)\n")
-    
+        
+    if (tipo >= 2):
+        f.write("\t(= (combustibleTotal) 0)\n") 
+        
     for i in range(n_personas):
         f.write("\t(esta_en p" + str(i+1) + " as" + str(random.randint(1, n_asentamientos)) + ")\n")
 
@@ -195,8 +222,18 @@ def main():
     for i in range(n_rovers):
         f.write("\t(aparcado_en r" + str(i+1))
         base = random.randint(0,1) # 0 -> asentamiento, 1 -> almacen
+        # En caso que solo haya de un tipo desacemos el factor aleatorio
+        if (n_almacenes == 0): base = 0
+        elif (n_asentamientos == 0): base = 1
+
         if (base == 0): f.write(" as" + str(random.randint(1, n_asentamientos)) + ")\n")
         else:           f.write(" al" + str(random.randint(1, n_almacenes)) + ")\n")
+        
+        if (tipo >= 1): 
+            f.write("\t(= (plazasLibres r" + str(i+1) + ") 2)\n")
+            if (tipo >= 2): #################### AFEGIR FORMULA PER COMBUSTIBLE #################
+                f.write("\t(= (combustible r" + str(i+1) + ") 100)\n")
+                
     
     for node1, node2 in connections:
         f.write("\t(hay_camino " + str(node1) + " " + str(node2) + ")\n")
@@ -222,8 +259,12 @@ def main():
         else:
             f.write("s" + str(suministros.pop() + 1) + " al" + str(random.randint(1, n_almacenes)) + ")\n")
     
-    f.write("))\n)\n")
+    f.write("))\n\n")
     
+    if (tipo >= 2 and minimize_it):
+        f.write("(:metric minimize (combustibleTotal))\n")
+    
+    f.write(")\n")
     f.close()
     
     print("El documento ha sido creado satisfactoriamente.")
