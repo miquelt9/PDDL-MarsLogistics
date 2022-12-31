@@ -22,7 +22,7 @@
 )
 
 (:functions
-    (plazasLibres)
+    (plazasLibres ?r - rover)
 )
 
 (:action mover_rover
@@ -40,8 +40,8 @@
         ?s - suministro
         ?b - base
     )
-    :precondition (and (esta_en ?s ?b) (aparcado_en ?r ?b) (> (plazasLibres) 1))
-    :effect (and (not (esta_en ?s ?b)) (esta_en_rover ?s ?r) (decrease (plazasLibres) 2))
+    :precondition (and (esta_en ?s ?b) (aparcado_en ?r ?b) (> (plazasLibres ?r) 1))
+    :effect (and (not (esta_en ?s ?b)) (esta_en_rover ?s ?r) (decrease (plazasLibres ?r) 2))
 )
 
 (:action bajar_suministro
@@ -51,7 +51,7 @@
         ?b - base
     )
     :precondition (and (esta_en_rover ?s ?r) (aparcado_en ?r ?b))
-    :effect (and (not (esta_en_rover ?s ?r)) (esta_en ?s ?b) (increase (plazasLibres) 2))
+    :effect (and (not (esta_en_rover ?s ?r)) (esta_en ?s ?b) (increase (plazasLibres ?r) 2))
 )
 
 (:action subir_persona
@@ -60,8 +60,8 @@
         ?p - persona
         ?b - base
     )
-    :precondition (and (esta_en ?p ?b) (aparcado_en ?r ?b) (> (plazasLibres) 0))
-    :effect (and (not (esta_en ?p ?b)) (esta_en_rover ?p ?r) (decrease (plazasLibres) 1))
+    :precondition (and (esta_en ?p ?b) (aparcado_en ?r ?b) (> (plazasLibres ?r) 0))
+    :effect (and (not (esta_en ?p ?b)) (esta_en_rover ?p ?r) (decrease (plazasLibres ?r) 1))
 )
 
 (:action bajar_persona
@@ -71,7 +71,7 @@
         ?b - base
     )
     :precondition (and (esta_en_rover ?p ?r) (aparcado_en ?r ?b))
-    :effect (and (not (esta_en_rover ?p ?r)) (esta_en ?p ?b) (increase (plazasLibres) 1))
+    :effect (and (not (esta_en_rover ?p ?r)) (esta_en ?p ?b) (increase (plazasLibres ?r) 1))
 )
 
 )

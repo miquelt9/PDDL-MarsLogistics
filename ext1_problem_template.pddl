@@ -8,7 +8,9 @@
 )
 
 (:init
-    (= (plazasLibres) 2)
+    (= (plazasLibres r1) 2)
+    (= (plazasLibres r2) 2)
+    (= (plazasLibres r3) 2)
     (esta_en p1 as1)
     (esta_en p2 as2)
     (esta_en p3 as3)
