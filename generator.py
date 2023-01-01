@@ -1,5 +1,5 @@
 import argparse
-from collections import deque
+from collections import defaultdict, deque
 import random
 import os
 import matplotlib.pyplot as plt
@@ -121,9 +121,7 @@ def main():
         raise argparse.ArgumentTypeError(msg) 
     
     # Actualizar variables que pueden dar problemas
-    edges = n_personas + n_suministros
     if (n_caminos == None): n_caminos = 0
-    if (n_peticiones > edges): n_peticiones = edges
     
     # Printear datos base del problema como informacion para el usuario
     print("The following arguments will be used to create the problem:\n")
@@ -243,21 +241,26 @@ def main():
     ### Write goal
     f.write("(:goal (and\n")
     
-    l_personas = list(range(0, n_personas))
-    random.shuffle(l_personas)
-    l_suministros = list(range(0, n_suministros))
-    random.shuffle(l_suministros)
-    
-    personas = deque(l_personas)
-    suministros = deque(l_suministros)
-    
+    peticiones = defaultdict(list)
     for i in range(n_peticiones):
-        f.write("\t(esta_en ")
         base = random.randint(0,1) # 0 -> asentamiento, 1 -> almacen
-        if (base == 0 and len(personas) > 0): 
-            f.write("p" + str(personas.pop() + 1) + " as" + str(random.randint(1, n_asentamientos)) + ")\n")
+        if (base == 0): 
+            p_rand = str(random.randint(1, n_personas))
+            peticiones["p"+p_rand].append("\t(esta_en p" + p_rand + " as" + str(random.randint(1, n_asentamientos)) + ")\n")
         else:
-            f.write("s" + str(suministros.pop() + 1) + " al" + str(random.randint(1, n_almacenes)) + ")\n")
+            s_rand = str(random.randint(1, n_suministros))
+            peticiones["s"+s_rand].append("\t(esta_en s" + s_rand + " al" + str(random.randint(1, n_almacenes)) + ")\n")
+            
+    #print(peticiones)
+    for p in peticiones:
+        #print(str(i) + " " + str(peticiones[i]))
+        #print(str(i) + str(len(peticiones[p])))
+        if (len(peticiones[p]) > 1): 
+            f.write("\t(or \n")
+        for i in peticiones[p]:
+            f.write(i)
+        if (len(peticiones[p]) > 1): 
+            f.write("\t)\n")
     
     f.write("))\n\n")
     
