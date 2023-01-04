@@ -229,7 +229,7 @@ def main():
         
         if (tipo >= 1): 
             f.write("\t(= (plazasLibres r" + str(i+1) + ") 2)\n")
-            if (tipo >= 2): #################### AFEGIR FORMULA PER COMBUSTIBLE #################
+            if (tipo >= 2): #################### AFEGIR FORMULA PER COMBUSTIBLE ################# (Could be used https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.shortest_paths.unweighted.all_pairs_shortest_path_length.html#networkx.algorithms.shortest_paths.unweighted.all_pairs_shortest_path_length)
                 f.write("\t(= (combustible r" + str(i+1) + ") 100)\n")
                 
     
