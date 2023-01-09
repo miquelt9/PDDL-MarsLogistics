@@ -62,7 +62,12 @@ Usage:
 ```
 usage: generator.py [-h] [--n_personas N_PERSONAS] [--n_suministros N_SUMINISTROS] [--n_rovers N_ROVERS]
                     [--n_asentamientos N_ASENTAMIENTOS] [--n_almacenes N_ALMACENES] [--n_caminos N_CAMINOS]
-                    [--n_peticiones N_PETICIONES] [--tipo TIPO] [--problem_name PROBLEM_NAME]
+                    [--n_peticiones N_PETICIONES] [--tipo TIPO] [--problem_name PROBLEM_NAME] [--draw]
+                    [--minimize]
 ```
-
+La flag `--draw` et mostrarà un imatge del graf generat.
+La flag `--minimize` farà que es minimitzi el combustible total utilitzat en l'extensió 2 i tingui en compte el combustible utilitzat en l'extensió 3 a part de les prioritats de les peticions.   
+    
+==> Recorda que per si utitlitzes `--minimize` i `-t 3` hauras d'utilitzar el domini `domain_ext3_minimax.pddl`, si no utilitzes `--minimze` hauràs d'utilitzar `domain_ext3_maximize_priority.pddl`.   
+   
 Pots demanar ajuda amb `python3 generator.py -h` si ho necessites (no obstant t'indicarà si algun dels paràmetres falla).
