@@ -208,14 +208,25 @@ def main():
     ### Write initial state
     f.write("(:init\n")
         
-    if (tipo >= 2):
+    if (tipo == 2):
         f.write("\t(= (combustibleTotal) 0)\n") 
+    elif (tipo == 3): 
+        if (minimize_it): 
+            f.write("\t(= (totalHeuristic) 0)\n")
+        else: 
+            f.write("\t(= (prioritatsTotal) 0)\n")
+            f.write("\t(= (combustibleTotal) 0)\n") 
+
         
     for i in range(n_personas):
+        if (tipo == 3):
+            f.write("\t(= (prioritat p" + str(i+1) + ") " + str(random.randint(1, 3)) + ")\n")
         f.write("\t(esta_en p" + str(i+1) + " as" + str(random.randint(1, n_asentamientos)) + ")\n")
 
     for i in range(n_suministros):
-            f.write("\t(esta_en s" + str(i+1) + " al" + str(random.randint(1, n_almacenes)) + ")\n")
+        if (tipo == 3):
+            f.write("\t(= (prioritat s" + str(i+1) + ") " + str(random.randint(1, 3)) + ")\n")
+        f.write("\t(esta_en s" + str(i+1) + " al" + str(random.randint(1, n_almacenes)) + ")\n")
             
     for i in range(n_rovers):
         f.write("\t(aparcado_en r" + str(i+1))
