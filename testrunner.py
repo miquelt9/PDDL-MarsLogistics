@@ -5,7 +5,7 @@ import psutil;
 
 x = input("Escala tests? ")
 y = input("Total tests? ")
-z = input("Total Timeout? ")
+z = input("Total Timeout? (seconds) ")
 w = input("Version? ")
 y = int(y)
 z = int(z)

@@ -264,7 +264,10 @@ def main():
     
     f.write("))\n\n")
     
-    if (tipo >= 2 and minimize_it):
+    if (tipo == 3):
+        if (minimize_it): f.write("(:metric maximize (totalHeuristic))\n")
+        else: f.write("(:metric maximize (prioritatsTotal))\n")
+    elif (tipo >= 2 and minimize_it):
         f.write("(:metric minimize (combustibleTotal))\n")
     
     f.write(")\n")
