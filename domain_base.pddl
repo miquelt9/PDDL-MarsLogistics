@@ -1,5 +1,5 @@
 ;Practica planificación FIB - IA (Problema de rovers i llevar cargas)
-; En esta primera version (base) no hay limitaciones de carga. 
+; No hi ha limitació de capacitat de càrrega i es poden portar persones i subministres alhora.
 
 (define (domain MarsLogisticsBase)
 

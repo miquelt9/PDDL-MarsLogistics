@@ -1,5 +1,7 @@
 ;Practica planificación FIB - IA (Problema de rovers i llevar cargas)
-; En esta primera version (ext1) no hay limitaciones de carga. 
+; Extensió 2 + Les peticions tenen prioritat 1, 2 o 3 (3 és la màxima), es vol màximitzar el nombre de peticions amb prioritat servides.
+; V.1: No importa quan combustible facin servir en total.
+; V.2: S'optimitza una combinació entre combustible total i prioritats (assignant pesos).
 
 (define (domain MarsLogisticsExt3)
 

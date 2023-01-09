@@ -1,5 +1,5 @@
 ;Practica planificación FIB - IA (Problema de rovers i llevar cargas)
-; En esta primera version (ext1) no hay limitaciones de carga. 
+; Un rover pot transportar màxim de dos persones o una càrrega de subministres (no es poden barrejar).
 
 (define (domain MarsLogisticsExt1)
 

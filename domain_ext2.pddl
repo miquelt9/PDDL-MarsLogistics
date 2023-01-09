@@ -1,5 +1,7 @@
 ;Practica planificación FIB - IA (Problema de rovers i llevar cargas)
-; En esta primera version (ext1) no hay limitaciones de carga. 
+; Extensió 1 + Els rovers tenen una capacitat de combustible, cada moviment gasta 1 unitat de combustible.
+; V.1: No importa quan combustible facin servir en total mentre es facin les peticions.
+; V.2: Es minimitza el consum de combustible total.
 
 (define (domain MarsLogisticsExt2)
 
