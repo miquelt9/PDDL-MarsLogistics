@@ -23,6 +23,8 @@ Extensió 2 + Les peticions tenen prioritat 1, 2 o 3 (3 és la màxima), es vol 
 V.1: No importa quan combustible facin servir en total.   
 V.2: S'optimitza una combinació entre combustible total i prioritats (assignant pesos).   
 
+Podeu consultar l'[informe](/InformePracticaPlanificaci%C3%B3.pdf) del projecte per veure la informacide com hem resolt el problema.
+
 ## Com executar
 
 Per tal d'executar una planifició caldrà tenir instal·lat MetricFF el qual es pot descarregar de la [pagina web](http://fai.cs.uni-saarland.de/hoffmann/ff.html) o bé [directament](./Metric-FF.zip).
